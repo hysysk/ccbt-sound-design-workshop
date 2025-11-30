@@ -75,7 +75,8 @@ startButton?.addEventListener("click", async () => {
 
       mic = new Tone.UserMedia();
       mic.open();
-      recorder = new Tone.Recorder();
+      // Use audio/mp4 for iOS Safari compatibility
+      recorder = new Tone.Recorder({ mimeType: "audio/mp4" });
       mic.connect(recorder);
       analyser = new Tone.Analyser("waveform", 512);
       Tone.Destination.connect(analyser);
@@ -120,6 +121,12 @@ startButton?.addEventListener("click", async () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (p as any).touchStarted = () => {
+      audios.forEach((audio) => {
+        audio.contains(p.mouseX, p.mouseY, recorder);
+      });
+    };
+
+    p.mousePressed = () => {
       audios.forEach((audio) => {
         audio.contains(p.mouseX, p.mouseY, recorder);
       });

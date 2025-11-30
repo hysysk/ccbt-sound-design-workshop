@@ -58,6 +58,9 @@ class AudioBank {
 
   play() {
     if (this.player.loaded) {
+      if (this.player.state === "started") {
+        this.player.stop();
+      }
       this.player.start();
     }
   }
@@ -68,7 +71,7 @@ class AudioBank {
       const recorded = await recorder.stop();
       const url = URL.createObjectURL(recorded);
       this.recordedURL = url;
-      this.player.load(url);
+      await this.player.load(url);
     } else {
       this.recording = true;
       recorder.start();
