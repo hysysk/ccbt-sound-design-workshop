@@ -12,15 +12,24 @@ class AudioBank {
   recordedURL: string;
   player: Tone.Player;
   id: number;
-  recIcon: p5.Image;
-  playIcon: p5.Image;
-  downloadIcon: p5.Image;
-  loopIcon: p5.Image;
+  recIcon: p5.Element;
+  playIcon: p5.Element;
+  downloadIcon: p5.Element;
+  loopIcon: p5.Element;
   buttonSize: number = 50;
   buttonMargin: number = 10;
   buttonOffsetY: number = 60;
 
-  constructor(p: p5, x: number, y: number, id: number) {
+  constructor(
+    p: p5,
+    x: number,
+    y: number,
+    id: number,
+    recIcon: p5.Element,
+    playIcon: p5.Element,
+    downloadIcon: p5.Element,
+    loopIcon: p5.Element
+  ) {
     this.p = p;
     this.x = x;
     this.y = y;
@@ -37,11 +46,10 @@ class AudioBank {
     this.recordedURL = "";
     this.player = new Tone.Player().toDestination();
     this.id = id;
-    this.recIcon = p.loadImage("/apps/hirameku-sampler/rec.svg");
-    this.playIcon = p.loadImage("/apps/hirameku-sampler/play.svg");
-    this.downloadIcon = p.loadImage("/apps/hirameku-sampler/download.svg");
-    this.loopIcon = p.loadImage("/apps/hirameku-sampler/loop.svg");
-    this.downloadIcon = p.loadImage("/apps/hirameku-sampler/download.svg");
+    this.recIcon = recIcon;
+    this.playIcon = playIcon;
+    this.downloadIcon = downloadIcon;
+    this.loopIcon = loopIcon;
   }
 
   load(file: p5.File) {

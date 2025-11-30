@@ -27,6 +27,50 @@ startButton?.addEventListener("click", async () => {
 
   new p5((p: p5) => {
     p.setup = () => {
+      const base = import.meta.env.BASE_URL;
+      
+      // Create hidden img elements for SVGs
+      const recImg = p.createImg(base + "rec.svg", "rec");
+      const playImg = p.createImg(base + "play.svg", "play");
+      const downloadImg = p.createImg(base + "download.svg", "download");
+      const loopImg = p.createImg(base + "loop.svg", "loop");
+      
+      // Hide the images (they'll be drawn manually)
+      recImg.hide();
+      playImg.hide();
+      downloadImg.hide();
+      loopImg.hide();
+
+      // Wait for all images to load
+      let loadedCount = 0;
+      const totalImages = 4;
+      
+      const checkAllLoaded = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          // All images loaded, create AudioBank instances
+          for (let i = 0; i < 6; i++) {
+            audios.push(
+              new AudioBank(
+                p,
+                25 + i * 100,
+                25,
+                i,
+                recImg,
+                playImg,
+                downloadImg,
+                loopImg
+              )
+            );
+          }
+        }
+      };
+      
+      recImg.elt.onload = checkAllLoaded;
+      playImg.elt.onload = checkAllLoaded;
+      downloadImg.elt.onload = checkAllLoaded;
+      loopImg.elt.onload = checkAllLoaded;
+
       p.createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
 
       mic = new Tone.UserMedia();
@@ -35,10 +79,6 @@ startButton?.addEventListener("click", async () => {
       mic.connect(recorder);
       analyser = new Tone.Analyser("waveform", 512);
       Tone.Destination.connect(analyser);
-
-      for (let i = 0; i < 6; i++) {
-        audios.push(new AudioBank(p, 25 + i * 100, 25, i));
-      }
     };
 
     p.draw = () => {
@@ -78,7 +118,8 @@ startButton?.addEventListener("click", async () => {
       p.endShape();
     };
 
-    p.touchStarted = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (p as any).touchStarted = () => {
       audios.forEach((audio) => {
         audio.contains(p.mouseX, p.mouseY, recorder);
       });
