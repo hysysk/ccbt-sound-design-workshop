@@ -10,13 +10,13 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "@types/p5": "^1.7.6",
-    "gh-pages": "^6.1.1",
-    "p5": "^1.9.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "@types/p5": "^1.7.7",
+    "gh-pages": "^6.3.0",
+    "p5": "^2.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
   },
   "dependencies": {
-    "tone": "^14.7.77"
+    "tone": "^15.1.22"
   }
 }
