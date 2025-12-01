@@ -3,15 +3,14 @@ import "./style.css";
 import p5 from "p5";
 import * as Tone from "tone";
 import AudioBank from "./AudioBank.ts";
-
-
+import DownloadAllButton from "./DownloadAllButton.ts";
 
 // Insert the sketch container into the page
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div id="sketch"></div>
 `;
 
-// UI: start button (present in HTML) and iOS reload button
+// UI: start button (present in HTML)
 const startButton = document.querySelector<HTMLButtonElement>("button");
 const WINDOW_WIDTH = 600;
 const WINDOW_HEIGHT = 745;
@@ -23,8 +22,6 @@ if (!startButton) {
     // Remove the start button
     startButton.remove();
 
-
-
     // Initialise Tone.js (required for microphone access)
     await Tone.start();
     if (Tone.context.state !== "running") {
@@ -33,11 +30,17 @@ if (!startButton) {
 
     const sketch = document.querySelector<HTMLDivElement>("#sketch")!;
     let audios: Array<AudioBank> = [];
+    let downloadAllButton: DownloadAllButton;
     let mic: Tone.UserMedia;
     let recorder: Tone.Recorder;
     let analyser: Tone.Analyser;
     const visualiserY = 345;
     const visualiserH = 400;
+
+    // Download All button properties
+    const downloadAllBtnX = WINDOW_WIDTH - 64;
+    const downloadAllBtnY = WINDOW_HEIGHT - 64;
+    const downloadAllBtnSize = 48;
 
     // p5 sketch definition
     new p5((p: p5) => {
@@ -50,27 +53,53 @@ if (!startButton) {
         const playImg = p.createImg(base + "play.svg", "play");
         const downloadImg = p.createImg(base + "download.svg", "download");
         const loopImg = p.createImg(base + "loop.svg", "loop");
+        const downloadAllImg = p.createImg(base + "download_all.svg", "download_all");
+        
         recImg.hide();
         playImg.hide();
         downloadImg.hide();
         loopImg.hide();
+        downloadAllImg.hide();
 
         // Wait until all icons are loaded before creating AudioBank instances
         let loaded = 0;
+        const totalImages = 5;
         const onLoaded = () => {
           loaded++;
-          if (loaded === 4) {
+          if (loaded === totalImages) {
             for (let i = 0; i < 6; i++) {
               audios.push(
                 new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg)
               );
             }
+            downloadAllButton = new DownloadAllButton(
+              p,
+              downloadAllBtnX,
+              downloadAllBtnY,
+              downloadAllBtnSize,
+              downloadAllImg,
+              audios
+            );
           }
         };
+        
+        const onError = (e: Event | string) => {
+            console.error("Failed to load image", e);
+            // Still count as loaded to avoid blocking the app, but maybe with a placeholder or broken state
+            onLoaded();
+        };
+
         recImg.elt.onload = onLoaded;
         playImg.elt.onload = onLoaded;
         downloadImg.elt.onload = onLoaded;
         loopImg.elt.onload = onLoaded;
+        downloadAllImg.elt.onload = onLoaded;
+
+        recImg.elt.onerror = onError;
+        playImg.elt.onerror = onError;
+        downloadImg.elt.onerror = onError;
+        loopImg.elt.onerror = onError;
+        downloadAllImg.elt.onerror = onError;
 
         // Canvas
         p.createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -112,15 +141,25 @@ if (!startButton) {
           p.vertex(x, y);
         }
         p.endShape();
+
+        if (downloadAllButton) {
+          downloadAllButton.display();
+        }
       };
 
       // ---------- input (touch & mouse) ----------
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (p as any).touchStarted = () => {
         audios.forEach((a) => a.contains(p.mouseX, p.mouseY, recorder));
+        if (downloadAllButton) {
+          downloadAllButton.contains(p.mouseX, p.mouseY);
+        }
       };
       p.mousePressed = () => {
         audios.forEach((a) => a.contains(p.mouseX, p.mouseY, recorder));
+        if (downloadAllButton) {
+          downloadAllButton.contains(p.mouseX, p.mouseY);
+        }
       };
     }, sketch);
   });
