@@ -81,7 +81,7 @@ class AudioBank {
   download() {
     if (this.recordedURL === "") return;
     const anchor = document.createElement("a");
-    anchor.download = `record-${this.id}-${new Date().toISOString()}.webm`;
+    anchor.download = `record-${this.id}-${new Date().toISOString()}`;
     anchor.href = this.recordedURL;
     anchor.click();
   }
