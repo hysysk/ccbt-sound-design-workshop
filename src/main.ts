@@ -78,7 +78,7 @@ if (!startButton) {
           if (loaded === totalImages) {
             for (let i = 0; i < 6; i++) {
               audios.push(
-                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg, recorder)
+                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg, recorder, mic, analyser)
               );
             }
             downloadAllButton = new DownloadAllButton(

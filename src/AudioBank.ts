@@ -19,6 +19,8 @@ class AudioBank {
   buttonSize: number = 50;
   buttonMargin: number = 10;
   buttonOffsetY: number = 60;
+  mic: Tone.UserMedia;
+  analyser: Tone.Analyser;
 
   constructor(
     p: p5,
@@ -29,7 +31,9 @@ class AudioBank {
     playIcon: p5.Element,
     downloadIcon: p5.Element,
     loopIcon: p5.Element,
-    recorder: Tone.Recorder
+    recorder: Tone.Recorder,
+    mic: Tone.UserMedia,
+    analyser: Tone.Analyser
   ) {
     this.p = p;
     this.x = x;
@@ -51,6 +55,8 @@ class AudioBank {
     this.playIcon = playIcon;
     this.downloadIcon = downloadIcon;
     this.loopIcon = loopIcon;
+    this.mic = mic;
+    this.analyser = analyser;
     this.player.connect(recorder);
   }
 
@@ -70,12 +76,14 @@ class AudioBank {
   async record(recorder: Tone.Recorder) {
     if (this.recording) {
       this.recording = false;
+      this.mic.disconnect(this.analyser);
       const recorded = await recorder.stop();
       const url = URL.createObjectURL(recorded);
       this.recordedURL = url;
       await this.player.load(url);
     } else {
       this.recording = true;
+      this.mic.connect(this.analyser);
       recorder.start();
     }
   }
