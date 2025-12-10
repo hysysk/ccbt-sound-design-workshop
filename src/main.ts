@@ -42,6 +42,15 @@ if (!startButton) {
     const downloadAllBtnY = WINDOW_HEIGHT - 64;
     const downloadAllBtnSize = 48;
 
+    // Audio input / recorder (iOS needs mp4 MIME type)
+    // Initialize this early so we can pass the recorder to AudioBank instances if needed
+    mic = new Tone.UserMedia();
+    mic.open();
+    recorder = new Tone.Recorder({ mimeType: "audio/mp4" });
+    mic.connect(recorder);
+    analyser = new Tone.Analyser("waveform", 512);
+    Tone.getDestination().connect(analyser);
+
     // p5 sketch definition
     new p5((p: p5) => {
       // ---------- setup ----------
@@ -69,7 +78,7 @@ if (!startButton) {
           if (loaded === totalImages) {
             for (let i = 0; i < 6; i++) {
               audios.push(
-                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg)
+                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg, recorder)
               );
             }
             downloadAllButton = new DownloadAllButton(
@@ -103,14 +112,6 @@ if (!startButton) {
 
         // Canvas
         p.createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        // Audio input / recorder (iOS needs mp4 MIME type)
-        mic = new Tone.UserMedia();
-        mic.open();
-        recorder = new Tone.Recorder({ mimeType: "audio/mp4" });
-        mic.connect(recorder);
-        analyser = new Tone.Analyser("waveform", 512);
-        Tone.Destination.connect(analyser);
       };
 
       // ---------- draw ----------

@@ -28,7 +28,8 @@ class AudioBank {
     recIcon: p5.Element,
     playIcon: p5.Element,
     downloadIcon: p5.Element,
-    loopIcon: p5.Element
+    loopIcon: p5.Element,
+    recorder: Tone.Recorder
   ) {
     this.p = p;
     this.x = x;
@@ -50,6 +51,7 @@ class AudioBank {
     this.playIcon = playIcon;
     this.downloadIcon = downloadIcon;
     this.loopIcon = loopIcon;
+    this.player.connect(recorder);
   }
 
   load(file: p5.File) {
