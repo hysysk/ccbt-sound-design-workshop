@@ -31,7 +31,6 @@ class AudioBank {
     playIcon: p5.Element,
     downloadIcon: p5.Element,
     loopIcon: p5.Element,
-    recorder: Tone.Recorder,
     mic: Tone.UserMedia,
     analyser: Tone.Analyser
   ) {
@@ -57,7 +56,7 @@ class AudioBank {
     this.loopIcon = loopIcon;
     this.mic = mic;
     this.analyser = analyser;
-    this.player.connect(recorder);
+
   }
 
   load(file: p5.File) {

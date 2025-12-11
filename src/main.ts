@@ -4,6 +4,7 @@ import p5 from "p5";
 import * as Tone from "tone";
 import AudioBank from "./AudioBank.ts";
 import DownloadAllButton from "./DownloadAllButton.ts";
+import LoopbackButton from "./LoopbackButton.ts";
 
 // Insert the sketch container into the page
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
@@ -31,6 +32,7 @@ if (!startButton) {
     const sketch = document.querySelector<HTMLDivElement>("#sketch")!;
     let audios: Array<AudioBank> = [];
     let downloadAllButton: DownloadAllButton;
+    let loopbackButton: LoopbackButton;
     let mic: Tone.UserMedia;
     let recorder: Tone.Recorder;
     let analyser: Tone.Analyser;
@@ -63,22 +65,24 @@ if (!startButton) {
         const downloadImg = p.createImg(base + "download.svg", "download");
         const loopImg = p.createImg(base + "loop.svg", "loop");
         const downloadAllImg = p.createImg(base + "download_all.svg", "download_all");
+        const loopbackImg = p.createImg(base + "loopback.svg", "loopback");
         
         recImg.hide();
         playImg.hide();
         downloadImg.hide();
         loopImg.hide();
         downloadAllImg.hide();
+        loopbackImg.hide();
 
         // Wait until all icons are loaded before creating AudioBank instances
         let loaded = 0;
-        const totalImages = 5;
+        const totalImages = 6;
         const onLoaded = () => {
           loaded++;
           if (loaded === totalImages) {
             for (let i = 0; i < 6; i++) {
               audios.push(
-                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg, recorder, mic, analyser)
+                new AudioBank(p, 25 + i * 100, 25, i, recImg, playImg, downloadImg, loopImg, mic, analyser)
               );
             }
             downloadAllButton = new DownloadAllButton(
@@ -88,6 +92,14 @@ if (!startButton) {
               downloadAllBtnSize,
               downloadAllImg,
               audios
+            );
+            loopbackButton = new LoopbackButton(
+              p,
+              downloadAllBtnX - 60,
+              downloadAllBtnY,
+              downloadAllBtnSize,
+              loopbackImg,
+              mic
             );
           }
         };
@@ -103,12 +115,14 @@ if (!startButton) {
         downloadImg.elt.onload = onLoaded;
         loopImg.elt.onload = onLoaded;
         downloadAllImg.elt.onload = onLoaded;
+        loopbackImg.elt.onload = onLoaded;
 
         recImg.elt.onerror = onError;
         playImg.elt.onerror = onError;
         downloadImg.elt.onerror = onError;
         loopImg.elt.onerror = onError;
         downloadAllImg.elt.onerror = onError;
+        loopbackImg.elt.onerror = onError;
 
         // Canvas
         p.createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -146,6 +160,9 @@ if (!startButton) {
         if (downloadAllButton) {
           downloadAllButton.display();
         }
+        if (loopbackButton) {
+          loopbackButton.display();
+        }
       };
 
       // ---------- input (touch & mouse) ----------
@@ -155,11 +172,17 @@ if (!startButton) {
         if (downloadAllButton) {
           downloadAllButton.contains(p.mouseX, p.mouseY);
         }
+        if (loopbackButton) {
+          loopbackButton.contains(p.mouseX, p.mouseY);
+        }
       };
       p.mousePressed = () => {
         audios.forEach((a) => a.contains(p.mouseX, p.mouseY, recorder));
         if (downloadAllButton) {
           downloadAllButton.contains(p.mouseX, p.mouseY);
+        }
+        if (loopbackButton) {
+          loopbackButton.contains(p.mouseX, p.mouseY);
         }
       };
     }, sketch);
