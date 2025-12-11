@@ -47,7 +47,13 @@ if (!startButton) {
     // Audio input / recorder (iOS needs mp4 MIME type)
     // Initialize this early so we can pass the recorder to AudioBank instances if needed
     mic = new Tone.UserMedia();
-    mic.open();
+    // @ts-ignore
+    mic.open({
+      channelCount: 2,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    });
     recorder = new Tone.Recorder({ mimeType: "audio/mp4" });
     mic.connect(recorder);
     analyser = new Tone.Analyser("waveform", 512);
